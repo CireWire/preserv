@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  preserv:
+    build: .
+    container_name: preserv-app
+    volumes:
+      # Mount host directories for archive access
+      - ./data:/app/data
+      - ${ARCHIVE_PATH:-./archives}:/archives:ro
+      # Mount X11 socket for GUI (Linux)
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    environment:
+      # X11 display for GUI
+      - DISPLAY=${DISPLAY:-:0}
+      # Archive path
+      - ARCHIVE_PATH=/archives
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    # For GUI mode, run with interactive terminal
+    stdin_open: true
+    tty: true
+
+  # Optional: Add a web interface service for future development
+  # preserv-web:
+  #   build: .
+  #   container_name: preserv-web
+  #   volumes:
+  #     - ./data:/app/data
+  #     - ${ARCHIVE_PATH:-./archives}:/archives:ro
+  #   ports:
+  #     - "8080:8080"
+  #   command: ["python", "/app/web_server.py"]
+  #   restart: unless-stopped
